@@ -11,6 +11,7 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
     private TextView[] names = new TextView[4];
     private int[] rnames = {R.id.name1, R.id.name2, R.id.name3, R.id.name4};
+    private MyAsyncTask myAsyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,11 +23,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void test1(View view) {
-        MyAsyncTask myAsyncTask = new MyAsyncTask();
+        myAsyncTask = new MyAsyncTask();
         myAsyncTask.execute("Brad","Tony","Kevin","Peter");
     }
 
-    private class MyAsyncTask extends AsyncTask<String,String,Void> {
+    public void test2(View view) {
+        if (myAsyncTask != null){
+            Log.v("brad", "status:" + myAsyncTask.getStatus());
+            if (!myAsyncTask.isCancelled()){
+                myAsyncTask.cancel(true);
+            }
+        }
+    }
+
+    private class MyAsyncTask extends AsyncTask<String,String,String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -34,15 +44,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Log.v("brad", "onPostExecute");
+        protected void onPostExecute(String mesg) {
+            super.onPostExecute(mesg);
+            Log.v("brad", "onPostExecute:" + mesg);
         }
 
         @Override
-        protected void onCancelled(Void aVoid) {
-            super.onCancelled(aVoid);
-            Log.v("brad", "onCancelled(args)");
+        protected void onCancelled(String mesg) {
+            super.onCancelled(mesg);
+            Log.v("brad", "onCancelled(args)" + mesg);
         }
 
         @Override
@@ -61,7 +71,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(String... names) {
+        protected String doInBackground(String... names) {
+            String retMesg = "normal";
             int i=0;
             for (String name : names){
                 Log.v("brad", "name = " + name);
@@ -70,13 +81,19 @@ public class MainActivity extends AppCompatActivity {
                         ""+(int)(Math.random()*49+1),
                         ""+(int)(Math.random()*49+1),
                         ""+(int)(Math.random()*49+1));
+
+                if (isCancelled()){
+                    retMesg = "cancel";
+                    break;
+                }
+
                 try {
                     Thread.sleep(1000);
                 }catch (Exception e){
 
                 }
             }
-            return null;
+            return retMesg;
         }
     }
 

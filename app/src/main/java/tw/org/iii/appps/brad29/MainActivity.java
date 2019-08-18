@@ -12,12 +12,14 @@ public class MainActivity extends AppCompatActivity {
     private TextView[] names = new TextView[4];
     private int[] rnames = {R.id.name1, R.id.name2, R.id.name3, R.id.name4};
     private MyAsyncTask myAsyncTask;
+    private TextView status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        status = findViewById(R.id.status);
         for (int i=0; i<names.length; i++) names[i] = findViewById(rnames[i]);
 
     }
@@ -47,12 +49,14 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String mesg) {
             super.onPostExecute(mesg);
             Log.v("brad", "onPostExecute:" + mesg);
+            status.setText(mesg);
         }
 
         @Override
         protected void onCancelled(String mesg) {
             super.onCancelled(mesg);
             Log.v("brad", "onCancelled(args)" + mesg);
+            status.setText(mesg);
         }
 
         @Override
